@@ -85,7 +85,7 @@
 
       <div class="strategy-bar">
         <fieldset class="strategy-fieldset">
-          <legend>Trading strategies <span class="legend-hint">pick one or more — signals combine</span></legend>
+          <legend>Forecasting strategies <span class="legend-hint">pick one or more — signals combine</span></legend>
           <div class="strategy-options" id="strategy-options"></div>
         </fieldset>
       </div>
@@ -366,6 +366,7 @@
           <nav aria-labelledby="methodology-toc-heading" class="methodology-toc">
             <h3 id="methodology-toc-heading">On this page</h3>
             <ol>
+              <li><a href="#m-abstract">Abstract</a></li>
               <li><a href="#m-model">Stochastic model</a></li>
               <li><a href="#m-calib">Calibration</a></li>
               <li><a href="#m-impl">Numerical implementation</a></li>
@@ -379,6 +380,9 @@
           </nav>
 
           <article class="methodology-article">
+            <h3 id="m-abstract">Abstract</h3>
+            <p>This dashboard implements a self-exciting Hawkes-process forecasting layer over the world's most active volcanoes. The choice of Hawkes (<cite>Hawkes, 1971</cite>) over a homogeneous Poisson reflects the empirically established temporal clustering of stratovolcano eruptions on decadal scales (<cite>Sparks &amp; Aspinall, 2004</cite>; <cite>Bebbington, 2010</cite>). Background rate, self-excitation amplitude, and kernel decay are calibrated by maximum likelihood on the Smithsonian GVP Holocene catalog. Conditional intensity is modulated by satellite thermal anomaly, SO₂ flux, and seismic RSAM via a marked-Hawkes extension; VEI conditional ejecta is drawn from a Bayesian Pareto prior (<cite>Marzocchi &amp; Bebbington, 2012</cite>; <cite>Newhall &amp; Self, 1982</cite>). Ogata thinning gives exact draws from the joint event-time density.</p>
+
             <h3 id="m-model">Stochastic model</h3>
             <p>Volcanic eruptions exhibit a striking statistical regularity: <em>they cluster in time</em>. On a given stratovolcano, the probability of an eruption next year is materially elevated if one occurred in the past few years compared to its long-run average. This is the defining signature of a <em>self-exciting</em> (Hawkes) point process, in which each event temporarily raises the conditional intensity of future events. The classical eruption-forecasting literature (Sparks &amp; Aspinall 2004; Marzocchi &amp; Bebbington 2012) provides strong empirical support for Hawkes models over the simpler Poisson alternative.</p>
       <p>We model the eruption arrival times <code>{t_i}</code> for a given volcano as a Hawkes process with conditional intensity:</p>
