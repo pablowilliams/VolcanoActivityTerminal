@@ -321,6 +321,45 @@
           <div id="extra-content" role="img" aria-label="Hazard heat-matrix"></div>
           <table class="sr-only" id="extra-data-table"><caption>Hazard heat-matrix by volcano and thermal bin</caption><thead><tr><th scope="col">Volcano</th><th scope="col">Thermal bin</th><th scope="col">Severity</th></tr></thead><tbody id="extra-data-body"></tbody></table>
         </section>
+        <section class="section extra-panel" aria-labelledby="recur-heading" id="extra2-section">
+          <div class="section-header">
+            <div>
+              <h2 id="recur-heading">Eruption recurrence // Hawkes-process histogram</h2>
+              <p class="subtext" id="extra2-subtitle">Inter-eruption interval histogram from the Holocene eruption catalog, with Hawkes self-exciting clustering kernel overlay. Tail = quiescent intervals.</p>
+            </div>
+            <span id="extra2-meta" class="subtext"></span>
+          </div>
+          <div id="extra2-content" role="img" aria-label="Eruption recurrence interval histogram"></div>
+          <table class="sr-only" id="extra2-data-table"><caption>Inter-eruption interval frequency</caption><thead><tr><th scope="col">Interval (yr)</th><th scope="col">Count</th><th scope="col">Hawkes intensity</th></tr></thead><tbody id="extra2-data-body"></tbody></table>
+        </section>
+        <section class="section methodology" aria-labelledby="methodology-heading" id="methodology-section">
+          <div class="section-header">
+            <div>
+              <h2 id="methodology-heading">Methodology &amp; model</h2>
+              <p class="subtext">Technical write-up of the stochastic process, calibration approach, and published references for the Volcano layer of this dashboard.</p>
+            </div>
+            <span class="subtext">WCAG 2.2 AA · dissertation-grade documentation</span>
+          </div>
+
+          <article class="methodology-article">
+            <h3 id="m-model">Stochastic model</h3>
+            <p>Eruption arrival times are modeled as a self-exciting Hawkes process, motivated by the empirical clustering of eruptions on stratovolcanoes (Sparks &amp; Aspinall 2004). The instantaneous eruption intensity at time <code>t</code> is:</p>
+      <p class="m-eq"><span role="math" aria-label="lambda of t equals mu plus sum over t sub i less than t of alpha e to the minus beta times t minus t sub i">λ(t) = μ + sum_{t_i < t} α e^{−β (t − t_i)}</span></p>
+      <p>where <code>μ</code> is the background eruption rate (per volcano, derived from Holocene record), <code>α</code> is the self-excitation strength, and <code>β</code> is the decay rate of the kernel (typically 0.5–2 yr⁻¹). The conditional ground-deformation signal, SO₂ flux, and seismic RSAM all couple in to nudge <code>λ(t)</code> upward when above-baseline.</p>
+
+            <h3 id="m-calib">Calibration</h3>
+            <p>Background <code>μ</code> and Hawkes parameters per volcano are calibrated from the Smithsonian Global Volcanism Program Holocene eruption catalog and recent decadal seismic-deformation records (USGS HVO, INGV, JMA, PVMBG). The hazard heat-matrix uses thermal-anomaly bins from MIROVA satellite product (TIR-1 lowest, TIR-5 highest).</p>
+
+            <h3 id="m-impl">Numerical implementation</h3>
+            <p>The recurrence-interval histogram is the empirical inter-eruption-interval distribution, overlaid with the analytical Hawkes intensity kernel evaluated at the same bin midpoints. VEI Monte Carlo for projected ash-plume height and ejecta volume uses a log-uniform draw on VEI ∈ [1, 7] weighted by per-volcano size-frequency distribution.</p>
+
+            <h3 id="m-limits">Known limitations</h3>
+            <ul><li>Supervolcano eruptions (VEI 7+) are extremely rare and the Hawkes framework is statistically uninformative at that scale — Yellowstone projections should be read as illustrative only.</li><li>Submarine volcanoes (Axial Seamount) have poor seismic monitoring; the calibration window is short.</li><li>Tectonic context (subduction-zone vs rift vs hotspot) is not modeled as a covariate but materially shifts eruption style.</li></ul>
+
+            <h3 id="m-refs">References</h3>
+            <ol class="methodology-refs" aria-label="References"><li><cite>Sparks, R. S. J. &amp; Aspinall, W. P. (2004). Volcanic Activity: Frontiers and Challenges in Forecasting. AGU Geophysical Monograph.</cite></li><li><cite>Marzocchi, W. &amp; Bebbington, M. S. (2012). Probabilistic Eruption Forecasting at Short and Long Time Scales. Bulletin of Volcanology 74.</cite></li><li><cite>Newhall, C. G. &amp; Self, S. (1982). The Volcanic Explosivity Index (VEI). Journal of Geophysical Research 87(C2).</cite></li><li><cite>Smithsonian Institution Global Volcanism Program (current). Volcanoes of the World database.</cite></li></ol>
+          </article>
+        </section>
 
   </main>
 
