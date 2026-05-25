@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-05-25T00:38:25.776Z",
+  "generatedAt": "2026-05-25T10:13:23.890Z",
   "source": "synthetic",
   "tickers": {
     "SAKU": {
       "ticker": "SAKU",
       "price": 78,
       "prevClose": 77.87061197001361,
-      "ts": 1779669505776,
+      "ts": 1779704003889,
       "currency": "USD",
       "exchange": "SIM",
       "closes": [
@@ -106,7 +106,7 @@
       "ticker": "KILA",
       "price": 64,
       "prevClose": 63.11269251884393,
-      "ts": 1779669505776,
+      "ts": 1779704003889,
       "currency": "USD",
       "exchange": "SIM",
       "closes": [
@@ -206,7 +206,7 @@
       "ticker": "ETNA",
       "price": 71,
       "prevClose": 71.49843205294353,
-      "ts": 1779669505776,
+      "ts": 1779704003889,
       "currency": "USD",
       "exchange": "SIM",
       "closes": [
@@ -306,7 +306,7 @@
       "ticker": "STROM",
       "price": 82,
       "prevClose": 82.41692764500725,
-      "ts": 1779669505776,
+      "ts": 1779704003889,
       "currency": "USD",
       "exchange": "SIM",
       "closes": [
@@ -406,7 +406,7 @@
       "ticker": "FUEGO",
       "price": 76,
       "prevClose": 76.10911148637489,
-      "ts": 1779669505776,
+      "ts": 1779704003889,
       "currency": "USD",
       "exchange": "SIM",
       "closes": [
@@ -506,7 +506,7 @@
       "ticker": "MERAP",
       "price": 68,
       "prevClose": 67.72147142069116,
-      "ts": 1779669505776,
+      "ts": 1779704003889,
       "currency": "USD",
       "exchange": "SIM",
       "closes": [
@@ -606,7 +606,7 @@
       "ticker": "POPO",
       "price": 62,
       "prevClose": 62.05688480292355,
-      "ts": 1779669505776,
+      "ts": 1779704003889,
       "currency": "USD",
       "exchange": "SIM",
       "closes": [
@@ -706,7 +706,7 @@
       "ticker": "EREB",
       "price": 35,
       "prevClose": 34.83668803424246,
-      "ts": 1779669505776,
+      "ts": 1779704003889,
       "currency": "USD",
       "exchange": "SIM",
       "closes": [
@@ -806,7 +806,7 @@
       "ticker": "TAAL",
       "price": 44,
       "prevClose": 44.87307769952481,
-      "ts": 1779669505776,
+      "ts": 1779704003889,
       "currency": "USD",
       "exchange": "SIM",
       "closes": [
@@ -906,7 +906,7 @@
       "ticker": "NYIRA",
       "price": 58,
       "prevClose": 58.266810846129665,
-      "ts": 1779669505776,
+      "ts": 1779704003889,
       "currency": "USD",
       "exchange": "SIM",
       "closes": [
@@ -1006,7 +1006,7 @@
       "ticker": "YELLO",
       "price": 22,
       "prevClose": 21.991271837612793,
-      "ts": 1779669505776,
+      "ts": 1779704003889,
       "currency": "USD",
       "exchange": "SIM",
       "closes": [
@@ -1106,7 +1106,7 @@
       "ticker": "AXIAL",
       "price": 41,
       "prevClose": 41.25640980221009,
-      "ts": 1779669505776,
+      "ts": 1779704003890,
       "currency": "USD",
       "exchange": "SIM",
       "closes": [
