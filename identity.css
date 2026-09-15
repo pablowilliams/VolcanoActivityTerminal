@@ -1,0 +1,13 @@
+/* Eruption Watch: public-safety monitoring layout. */
+:root { --bg:#f4f1eb; --bg-elev-1:#fff; --bg-elev-2:#faf8f3; --bg-elev-3:#ece5da; --border:#d8cdbf; --border-strong:#9b8776; --text:#281e19; --text-muted:#6b5c52; --text-dim:#88786e; --accent:#a93d24; --accent-dim:#792c1b; --accent-bg:rgba(169,61,36,.1); --focus:#a93d24; --font-sans:"Space Grotesk",system-ui,sans-serif; --r:4px; }
+html,body { background:var(--bg); color:var(--text); }
+body::before,body::after,.ticker-tape-wrap,.term-strip { display:none!important; }
+.app { max-width:1460px; padding:24px 32px 56px; }
+.app-header { background:#30231d; color:#fff8ef; margin:-24px -32px 24px; padding:22px 32px; border:0; }
+.app-header h1,.app-header .subtitle,.header-meta { color:inherit; }
+.app-header h1 { font:700 19px/1.2 var(--font-sans); letter-spacing:.01em; text-transform:none; }
+.hero { background:#fff; border:0; border-top:5px solid var(--accent); box-shadow:0 8px 24px rgba(40,30,25,.08); }
+.hero-h { font-family:var(--font-sans); letter-spacing:-.04em; text-transform:none; }
+.section,.controls-block { background:#fff; border-color:var(--border); box-shadow:none; }
+.section h2,.section h3,.section h4 { color:var(--text); font-family:var(--font-sans); text-transform:none; letter-spacing:-.01em; }
+

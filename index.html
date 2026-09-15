@@ -4,26 +4,17 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="color-scheme" content="dark" />
-<title>VolcanoActivityTerminal — Active Volcano Risk Monitor</title>
-<meta name="description" content="Terminal-style Monte Carlo dashboard for active volcanoes with VEI eruption probability sims, hazard heat-matrix, and volcanology-community chatter sentiment." />
+<title>Eruption Watch — Active Volcano Risk Monitor</title>
+<meta name="description" content="Volcanic activity scenario monitor for active volcanoes with VEI eruption probability sims, hazard heat-matrix, and volcanology-community chatter sentiment." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="identity.css" />
 </head>
 <body>
 
 <a href="#main" class="skip-link">Skip to main content</a>
-
-<!-- ===== Boot overlay ===== -->
-<div id="boot-overlay" class="boot-overlay" role="dialog" aria-modal="true" aria-labelledby="boot-title" hidden>
-  <div class="boot-inner">
-    <button type="button" id="boot-skip" class="boot-skip">Skip intro</button>
-    <h2 id="boot-title" class="sr-only">Terminal boot sequence</h2>
-    <pre id="boot-log" class="boot-log" aria-live="polite" aria-atomic="false"></pre>
-    <p class="boot-hint sr-only">Press Escape to skip the boot animation.</p>
-  </div>
-</div>
 
 <div class="app">
 
@@ -36,16 +27,16 @@
     <div id="ticker-tape-sr" class="sr-only" aria-live="off"></div>
   </div>
 
-  <!-- ===== Terminal top strip ===== -->
+  <!-- ===== Compact status strip ===== -->
   <div class="term-strip" role="status" aria-label="Session status">
     <span class="kv"><span class="brand-dot" aria-hidden="true"></span><span>VAT</span></span>
     <span class="kv"><span>WATCH</span> <span class="v" id="term-watch">10</span></span>
-    <span class="kv term-conn initializing" id="term-conn" aria-label="Data feed connection status">
+    <span class="kv term-conn initializing" id="term-conn" aria-label="Scenario data status">
       <span class="conn-shape" aria-hidden="true"></span>
       <span id="term-conn-label">INIT</span>
       <span class="v" id="term-conn-src">—</span>
     </span>
-    <span class="kv" id="term-mkt-wrap"><span>MKT</span> <span class="v" id="term-market" title="US equity market session">—</span></span>
+    <span class="kv" id="term-mkt-wrap"><span>MKT</span> <span class="v" id="term-market" title="US equity observation window">—</span></span>
     <span class="kv"><span>HORIZON</span> <span class="v" id="term-horizon">30D</span></span>
     <span class="kv"><span>PATHS</span> <span class="v" id="term-paths">1K</span></span>
     <span class="kv"><span>SEED</span> <span class="v" id="term-seed">42</span></span>
@@ -56,7 +47,7 @@
   <!-- ===== Feed banner (only visible when real feed falls back) ===== -->
   <div id="feed-banner" class="feed-banner" role="status" hidden>
     <span class="feed-banner-icon" aria-hidden="true">!</span>
-    <span class="feed-banner-text" id="feed-banner-text">Live feed unavailable — showing simulated data.</span>
+    <span class="feed-banner-text" id="feed-banner-text">Scenario snapshot unavailable — using embedded seed data.</span>
     <button type="button" id="feed-retry" class="feed-btn">Retry</button>
     <button type="button" id="feed-dismiss" class="feed-btn feed-btn-icon" aria-label="Dismiss feed notice">×</button>
   </div>
@@ -67,12 +58,12 @@
   <!-- ===== Header ===== -->
   <header class="app-header" role="banner">
     <div>
-      <h1>VolcanoActivityTerminal // Terminal</h1>
-      <p class="subtitle">Monte Carlo dashboard for the world's most active volcanoes. Track VEI risk, magma pressure proxies, ash-plume modeling, and seismic chatter.</p>
+      <h1>Eruption Watch </h1>
+      <p class="subtitle">A review workspace for comparing simplified activity scenarios.</p>
     </div>
     <div class="header-meta" aria-label="Data status">
-      <span><span class="live-dot" aria-hidden="true"></span>Live ticks</span>
-      <span>Last update: <time id="last-update" datetime="">—</time></span>
+      <span><span class="live-dot" aria-hidden="true"></span>Scenario replay</span>
+      <span>Snapshot checked: <time id="last-update" datetime="">—</time></span>
     </div>
   </header>
 
@@ -81,10 +72,10 @@
     <section class="hero" aria-labelledby="hero-heading">
       <div class="hero-grid">
         <div class="hero-text">
-          <p class="hero-eyebrow"><span class="hero-dot" aria-hidden="true"></span> VAT · 12 volcanoes · WCAG 2.2 AA</p>
-          <h2 id="hero-heading" class="hero-h">VolcanoActivityTerminal</h2>
-          <p class="hero-sub">Monte Carlo dashboard for the world's most active volcanoes. Track VEI risk, magma pressure proxies, ash-plume modeling, and seismic chatter.</p>
-          <p class="hero-abstract">This dashboard implements a self-exciting Hawkes-process forecasting layer over the world's most active volcanoes. The choice of Hawkes (Hawkes, 1971) over a homogeneous Poisson reflects the empirically established…</p>
+          <p class="hero-eyebrow"><span class="hero-dot" aria-hidden="true"></span> WATCH REVIEW · 12 VOLCANOES · SYNTHETIC OBSERVATIONS</p>
+          <h2 id="hero-heading" class="hero-h">Eruption Watch</h2>
+          <p class="hero-sub">Review simplified seismic, thermal, and deformation scenarios across a fixed volcano watchlist.</p>
+          <p class="hero-abstract">This is a sensitivity exercise built around synthetic observations. It is not connected to monitoring agencies and must not be used as an alerting service.</p>
           <p class="hero-actions">
             <a class="hero-link" href="#dashboard-title" id="hero-skip">Skip to live dashboard ↓</a>
             <a class="hero-link" href="#methodology-section">Read methodology</a>
@@ -127,10 +118,10 @@
         <div class="field">
           <label for="horizon-select">Horizon</label>
           <select id="horizon-select">
-            <option value="5">5 trading days</option>
-            <option value="30" selected>30 trading days</option>
-            <option value="90">90 trading days</option>
-            <option value="252">252 trading days</option>
+            <option value="5">5 forecast steps</option>
+            <option value="30" selected>30 forecast steps</option>
+            <option value="90">90 forecast steps</option>
+            <option value="252">252 forecast steps</option>
           </select>
         </div>
         <div class="field">
@@ -146,7 +137,7 @@
       </div>
 
       <span id="live-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></span>
-      <p id="status-line" class="status-line" aria-hidden="true">Ready. Select strategies and a ticker, then run a simulation.</p>
+      <p id="status-line" class="status-line" aria-hidden="true">Ready. Choose observation inputs, then run the scenario.</p>
     </section>
 
     <!-- ===== Main grid: content + right rail ===== -->
@@ -154,11 +145,11 @@
 
       <div class="main-col">
 
-        <!-- ===== Portfolio KPIs ===== -->
+        <!-- ===== Summary metrics ===== -->
         <section aria-labelledby="perf-heading">
           <div class="section-header tight">
-            <h2 id="perf-heading">Portfolio performance</h2>
-            <span class="subtext">Equal-weight — all volcanoes</span>
+            <h2 id="perf-heading">Activity overview</h2>
+            <span class="subtext">All monitored volcanoes</span>
           </div>
           <div class="kpi-strip" id="kpi-strip"></div>
         </section>
@@ -167,17 +158,17 @@
         <section aria-labelledby="heatmap-heading" class="heatmap-section">
           <div class="section-header tight">
             <h2 id="heatmap-heading">Watchlist heatmap</h2>
-            <span class="subtext">Tile color = today change · size = portfolio weight</span>
+            <span class="subtext">Colour = latest activity change · size = relative activity index</span>
           </div>
           <div class="heatmap" id="heatmap" role="list" aria-label="Watchlist heatmap by today's change"></div>
         </section>
 
-        <!-- ===== Individual stocks ===== -->
+        <!-- ===== Volcano watchlist ===== -->
         <section class="section" aria-labelledby="stocks-heading">
           <div class="section-header">
             <div>
-              <h2 id="stocks-heading">Individual volcanoes // tracked</h2>
-              <p class="subtext">Every volcano tracked in the VAT dashboard. Action column = combined signal (ERUPT / DORMANT / WATCH) from your selected strategies. Click a row to drill down.</p>
+              <h2 id="stocks-heading">Volcano watchlist</h2>
+              <p class="subtext">The fixed locations used in this study. Review status combines the selected indicators; choose a row for detail.</p>
             </div>
             <span id="aggregate-signal" aria-live="polite"></span>
           </div>
@@ -202,14 +193,14 @@
               <tbody id="stocks-body"></tbody>
             </table>
           </div>
-          <p class="table-help subtext" id="table-help">Tip: click any row or press Enter on a focused row to select that ticker.</p>
+          <p class="table-help subtext" id="table-help">Choose a row, or press Enter from the keyboard, to inspect a volcano.</p>
         </section>
 
         <!-- ===== Detail for selected ticker ===== -->
         <section class="section" aria-labelledby="detail-heading" id="detail-section">
           <div class="section-header">
             <div>
-              <h2 id="detail-heading">Detail // <span id="detail-ticker">—</span> <span id="detail-name" class="subtext"></span></h2>
+              <h2 id="detail-heading">Location detail · <span id="detail-ticker">—</span> <span id="detail-name" class="subtext"></span></h2>
               <p class="subtext" id="detail-subtitle">Click a row in the table above to drill into a specific volcano.</p>
             </div>
             <span id="detail-signal" aria-live="polite"></span>
@@ -220,7 +211,7 @@
               <span class="chart-crt-layer" aria-hidden="true"></span>
               <h3 id="mc-heading">Monte Carlo price paths</h3>
               <div id="mc-chart" role="img" aria-label="Loading chart" tabindex="0" aria-describedby="mc-crosshair-help"></div>
-              <p id="mc-crosshair-help" class="sr-only">Use left and right arrow keys to move the crosshair across trading days; press Home or End to jump to first or last day.</p>
+              <p id="mc-crosshair-help" class="sr-only">Use left and right arrow keys to move the crosshair across forecast steps; press Home or End to jump to first or last day.</p>
               <div id="mc-crosshair-sr" class="sr-only" aria-live="polite" aria-atomic="true"></div>
               <figcaption id="mc-caption">Run a simulation to see projected price paths.</figcaption>
               <table class="sr-only" id="mc-data-table" aria-label="Monte Carlo summary statistics">
@@ -260,7 +251,7 @@
           </div>
 
           <div>
-            <h3 id="strategy-breakdown-heading">Per-strategy signals // <span id="detail-ticker-2">—</span></h3>
+            <h3 id="strategy-breakdown-heading">Indicator breakdown · <span id="detail-ticker-2">—</span></h3>
             <div class="strategy-grid" id="strategy-grid" aria-labelledby="strategy-breakdown-heading"></div>
           </div>
         </section>
@@ -287,8 +278,8 @@
           <p class="rail-box-sub" id="rail-winrate-sub">Pr(MC final &gt; entry)</p>
         </div>
         <div class="rail-box gauge-box" id="rail-sharpe">
-          <p class="rail-box-label">Sharpe</p>
-          <div class="gauge-wrap" id="gauge-sharpe" role="img" aria-label="Sharpe gauge">
+          <p class="rail-box-label">Stability ratio</p>
+          <div class="gauge-wrap" id="gauge-sharpe" role="img" aria-label="Stability ratio gauge">
             <svg class="gauge" viewBox="0 0 120 68" aria-hidden="true">
               <path class="gauge-track" d="M10,60 A50,50 0 0,1 110,60"/>
               <path class="gauge-fill" id="gauge-sharpe-arc" d="M10,60 A50,50 0 0,1 110,60"/>
@@ -298,12 +289,12 @@
             </svg>
           </div>
           <p class="rail-box-value" id="rail-sharpe-val">—</p>
-          <p class="rail-box-sub" id="rail-sharpe-sub">Ex-ante · rf 4.5%</p>
+          <p class="rail-box-sub" id="rail-sharpe-sub">Normalised dispersion</p>
         </div>
         <div class="rail-box" id="rail-er">
           <p class="rail-box-label">E[R]</p>
           <p class="rail-box-value" id="rail-er-val">—</p>
-          <p class="rail-box-sub" id="rail-er-sub">Portfolio, 30d</p>
+          <p class="rail-box-sub" id="rail-er-sub">Watchlist · 30d</p>
         </div>
         <div class="rail-box down gauge-box" id="rail-var">
           <p class="rail-box-label">VaR 95%</p>
@@ -346,13 +337,13 @@
         <section class="section extra-panel" aria-labelledby="recur-heading" id="extra2-section">
           <div class="section-header">
             <div>
-              <h2 id="recur-heading">Eruption recurrence // Hawkes-process histogram</h2>
-              <p class="subtext" id="extra2-subtitle">Inter-eruption interval histogram from the Holocene eruption catalog, with Hawkes self-exciting clustering kernel overlay. Tail = quiescent intervals.</p>
+              <h2 id="recur-heading">Synthetic recurrence intervals</h2>
+              <p class="subtext" id="extra2-subtitle">Illustrative inter-eruption intervals with a clustering curve. These values are generated for the interface and do not come from an observatory catalogue.</p>
             </div>
             <span id="extra2-meta" class="subtext"></span>
           </div>
           <div id="extra2-content" role="img" aria-label="Eruption recurrence interval histogram"></div>
-          <table class="sr-only" id="extra2-data-table"><caption>Inter-eruption interval frequency</caption><thead><tr><th scope="col">Interval (yr)</th><th scope="col">Count</th><th scope="col">Hawkes intensity</th></tr></thead><tbody id="extra2-data-body"></tbody></table>
+          <table class="sr-only" id="extra2-data-table"><caption>Synthetic inter-eruption interval frequency</caption><thead><tr><th scope="col">Interval (yr)</th><th scope="col">Count</th><th scope="col">Clustering index</th></tr></thead><tbody id="extra2-data-body"></tbody></table>
         </section>
         <section class="section extra-panel" aria-labelledby="tornado-heading" id="extra3-section">
           <div class="section-header">
@@ -377,95 +368,16 @@
           <table class="sr-only" id="extra4-data-table"><caption>Parameter-grid heatmap values</caption><thead><tr><th scope="col">n=α/β</th><th scope="col">τ (yr since last)</th><th scope="col">Outcome (Conditional P(eruption in next 12mo))</th></tr></thead><tbody id="extra4-data-body"></tbody></table>
         </section>
         <section class="section methodology" aria-labelledby="methodology-heading" id="methodology-section">
-          <div class="section-header">
-            <div>
-              <h2 id="methodology-heading">Methodology &amp; model</h2>
-              <p class="subtext">Dissertation-grade technical write-up of the stochastic process, calibration, glossary, worked example, sensitivity analysis, comparison to alternatives, and references for the Volcano layer of this dashboard.</p>
-            </div>
-            <span class="subtext">WCAG 2.2 AA · 10 citations</span>
-          </div>
-
-          <nav aria-labelledby="methodology-toc-heading" class="methodology-toc">
-            <h3 id="methodology-toc-heading">On this page</h3>
-            <ol>
-              <li><a href="#m-abstract">Abstract</a></li>
-              <li><a href="#m-model">Stochastic model</a></li>
-              <li><a href="#m-calib">Calibration</a></li>
-              <li><a href="#m-impl">Numerical implementation</a></li>
-              <li><a href="#m-glossary">Glossary &amp; notation</a></li>
-              <li><a href="#m-example">Worked example</a></li>
-              <li><a href="#m-sens">Sensitivity analysis</a></li>
-              <li><a href="#m-alt">Comparison vs alternative approaches</a></li>
-              <li><a href="#m-valid">Empirical validation</a></li>
-              <li><a href="#m-limits">Known limitations</a></li>
-              <li><a href="#m-future">Open questions &amp; future work</a></li>
-              <li><a href="#m-code">Code &amp; data</a></li>
-              <li><a href="#m-refs">References</a></li>
-            </ol>
-          </nav>
-
+          <div class="section-header"><div><h2 id="methodology-heading">How this review works</h2><p class="subtext">Calculation choices, reproducibility, and safety boundaries.</p></div><span class="subtext">Deterministic browser model</span></div>
           <article class="methodology-article">
-            <h3 id="m-abstract">Abstract</h3>
-            <p>This dashboard implements a self-exciting Hawkes-process forecasting layer over the world's most active volcanoes. The choice of Hawkes (<cite>Hawkes, 1971</cite>) over a homogeneous Poisson reflects the empirically established temporal clustering of stratovolcano eruptions on decadal scales (<cite>Sparks &amp; Aspinall, 2004</cite>; <cite>Bebbington, 2010</cite>). Background rate, self-excitation amplitude, and kernel decay are calibrated by maximum likelihood on the Smithsonian GVP Holocene catalog. Conditional intensity is modulated by satellite thermal anomaly, SO₂ flux, and seismic RSAM via a marked-Hawkes extension; VEI conditional ejecta is drawn from a Bayesian Pareto prior (<cite>Marzocchi &amp; Bebbington, 2012</cite>; <cite>Newhall &amp; Self, 1982</cite>). Ogata thinning gives exact draws from the joint event-time density.</p>
-
-            <h3 id="m-model">Stochastic model</h3>
-            <p>Volcanic eruptions exhibit a striking statistical regularity: <em>they cluster in time</em>. On a given stratovolcano, the probability of an eruption next year is materially elevated if one occurred in the past few years compared to its long-run average. This is the defining signature of a <em>self-exciting</em> (Hawkes) point process, in which each event temporarily raises the conditional intensity of future events. The classical eruption-forecasting literature (Sparks &amp; Aspinall 2004; Marzocchi &amp; Bebbington 2012) provides strong empirical support for Hawkes models over the simpler Poisson alternative.</p>
-      <p>We model the eruption arrival times <code>{t_i}</code> for a given volcano as a Hawkes process with conditional intensity:</p>
-      <p class="m-eq"><span role="math" aria-label="lambda of t equals mu plus sum over t sub i less than t of alpha e to the minus beta times t minus t sub i">λ(t) = μ + sum_{t_i < t} α e^{−β (t − t_i)}</span></p>
-      <p>where <code>μ</code> is the background eruption rate (per volcano, from the Holocene record), <code>α</code> is the per-event self-excitation amplitude, and <code>β</code> is the exponential decay rate of the kernel. The branching ratio <code>n = α / β</code> measures clustering strength: <code>n &lt; 1</code> is stationary (sub-critical); <code>n = 1</code> is critical; <code>n &gt; 1</code> is super-critical and divergent. For most volcanoes <code>n ≈ 0.3–0.7</code>.</p>
-      <p>Co-eruptive observables — SO₂ flux, seismic Real-time Seismic-Amplitude Measurement (RSAM), GPS deformation, and satellite thermal anomaly (MIROVA TIR bins 1–5) — provide a <em>marked Hawkes</em> extension: above-baseline values raise the conditional intensity beyond what the simple time-only kernel implies. The dashboard treats these as multiplicative modifiers <code>λ_eff(t) = λ(t) · (1 + γ_SO₂ · z_SO₂ + γ_RSAM · z_RSAM + ...)</code> where <code>z</code> values are standardized residuals.</p>
-      <p>The VEI scale (Newhall &amp; Self 1982) is a logarithmic measure of explosive eruption size based on ejecta volume: VEI 1 ≈ 10⁴ m³, VEI 5 ≈ 10⁹ m³, VEI 8 (super-volcano) ≈ 10¹² m³. The per-volcano VEI distribution is heavy-tailed: for Sakurajima the mode is VEI 2 with a Pareto-like tail; for Yellowstone the mode is VEI 0 (no eruption) with a (very rare) VEI 8 tail.</p>
-
-            <h3 id="m-calib">Calibration</h3>
-            <p>Background rate <code>μ</code> and Hawkes parameters <code>(α, β)</code> per volcano are estimated by maximum likelihood on the Smithsonian Global Volcanism Program Holocene eruption catalog, filtered to the volcano of interest and aggregated to annual events. For volcanoes with sparse eruption records (e.g. Erebus) we apply hierarchical pooling using analogous volcanoes (Antarctic stratovolcanoes) as the prior.</p>
-      <p>Co-eruptive observable coefficients <code>γ_*</code> are calibrated against the decade-long monitoring records from USGS HVO (Kīlauea), INGV (Etna, Stromboli), JMA (Sakurajima), PVMBG (Merapi), CENAPRED (Popocatépetl), and PHIVOLCS (Taal). MIROVA TIR bins are taken from the Coppola et al. satellite-thermal-anomaly product.</p>
-      <p>The VEI distribution per volcano uses the Bebbington-Marzocchi (2012) Bayesian framework that weights the Holocene record with a regional Pareto prior to handle the small-sample problem in the upper tail.</p>
-
-            <h3 id="m-impl">Numerical implementation</h3>
-            <p>The Hawkes intensity λ(t) is evaluated analytically at any time — no MC needed for the intensity itself. For forward simulation of eruption time-series we use Ogata's thinning algorithm (Ogata 1981): propose events at the current upper-bound intensity, accept with probability <code>λ(t)/λ_max</code>. This is exact and produces samples from the Hawkes joint density.</p>
-      <p>The recurrence-interval histogram (extra2) is the empirical inter-eruption-interval distribution from the catalog, with the analytical Hawkes intensity kernel overlaid at the same bin midpoints. The hazard heat-matrix (extra) is computed as <code>severity(v, bin) = activity_v · bin_weight_bin + σ_v · 0.5</code> with glyph + color encoding.</p>
-      <p>VEI Monte Carlo (when a "Run Sim" produces forward predictions) uses a stratified draw over VEI ∈ [1, 7] weighted by the per-volcano empirical Pareto distribution, with each VEI mapped to a log-uniform ejecta volume within its bracket.</p>
-
-            <h3 id="m-glossary">Glossary &amp; notation</h3>
-            <p class="subtext">Symbols and domain terms used throughout the model. Symbol units are given where applicable.</p>
-            <dl class="methodology-glossary"><dt><span aria-label="lambda of t">λ(t)</span></dt><dd>Conditional intensity of the Hawkes process at time t. <em>Units:</em> <code>events/yr</code></dd><dt><span aria-label="mu">μ</span></dt><dd>Background eruption rate (Poisson baseline). <em>Units:</em> <code>events/yr</code></dd><dt><span aria-label="alpha">α</span></dt><dd>Self-excitation amplitude per event. <em>Units:</em> <code>(unitless)</code></dd><dt><span aria-label="beta">β</span></dt><dd>Exponential decay rate of the kernel. <em>Units:</em> <code>1/yr</code></dd><dt><span>n</span></dt><dd>Branching ratio = α/β; stability if &lt;1. <em>Units:</em> <code>ratio</code></dd><dt><span>VEI</span></dt><dd>Volcanic Explosivity Index (Newhall &amp; Self). <em>Units:</em> <code>integer 0–8</code></dd><dt><span>RSAM</span></dt><dd>Real-time Seismic-Amplitude Measurement. <em>Units:</em> <code>μm/s</code></dd><dt><span>SO₂ flux</span></dt><dd>Sulfur-dioxide emission rate. <em>Units:</em> <code>tonnes/day</code></dd><dt><span>MIROVA TIR</span></dt><dd>MIROVA satellite thermal-infrared bin (1 lowest, 5 highest). <em>Units:</em> <code>bin index</code></dd><dt><span>Ejecta volume</span></dt><dd>Tephra volume erupted (defines VEI). <em>Units:</em> <code>m³</code></dd><dt><span>Stratovolcano</span></dt><dd>Composite cone, viscous magma, explosive eruptions. <em>Units:</em> <code>(categorical)</code></dd><dt><span>Caldera</span></dt><dd>Large collapsed volcanic crater. <em>Units:</em> <code>(categorical)</code></dd><dt><span>PDC</span></dt><dd>Pyroclastic density current (lethal hot ash flow). <em>Units:</em> <code>(qualitative)</code></dd><dt><span>Lahar</span></dt><dd>Volcanic mudflow. <em>Units:</em> <code>(qualitative)</code></dd></dl>
-
-            <h3 id="m-example">Worked example</h3>
-            <p>End-to-end numerical walk-through of one Monte Carlo path for a representative volcano, showing how a single random draw translates through the model to a published statistic on the dashboard.</p>
-            <ol class="methodology-example"><li><strong>Inputs.</strong> Select Sakurajima. Catalog says 12 eruptions in the last 50 years. Estimated μ = 0.10/yr, α = 0.18, β = 0.40/yr → branching ratio n = 0.45. </li><li><strong>Current intensity.</strong> Last eruption 0.5 yr ago. λ(t) = μ + α·e^{−β·0.5} = 0.10 + 0.18·e^{−0.20} = 0.10 + 0.147 ≈ 0.25/yr. Roughly 2.5× the long-run mean. </li><li><strong>Forward forecast.</strong> Probability of at least one eruption in next 12 months: 1 − exp(−∫_0^1 λ(t)dt). With the kernel decaying, the integral ≈ 0.10 + 0.18·(1−e^{−0.4})/0.4 ≈ 0.25. So P ≈ 1 − e^{−0.25} ≈ 22%. </li><li><strong>VEI conditional.</strong> Given an eruption, VEI distribution for Sakurajima: VEI 2 (60%), VEI 3 (25%), VEI 4 (10%), VEI 5+ (&lt;5%). Mean expected ejecta volume ~5e6 m³ per event. </li><li><strong>Signal.</strong> Intensity 2.5× baseline puts the conditional probability in elevated range → WATCH signal. If MIROVA TIR bin elevates to 4–5, escalate to ERUPT-likely. </li></ol>
-
-            <h3 id="m-sens">Sensitivity analysis</h3>
-            <p>Tornado panel (extra3) shows that for most volcanoes the recent-eruption-time τ since last event is the dominant short-horizon driver of intensity — moving the most recent event from 2 yr ago to 0.5 yr ago can double <code>λ(t)</code>. Background <code>μ</code> dominates the long-horizon probability. Branching ratio <code>n</code> controls the persistence of clustered episodes. Parameter grid (extra4) sweeps (n, τ_last) jointly.</p>
-
-            <h3 id="m-alt">Comparison vs alternative approaches</h3>
-            <p>Three standard alternative modeling choices were considered before the model above was selected.</p>
-            <ul class="methodology-alts"><li><strong>Pure Poisson process.</strong> Assumes events are memoryless. Empirically wrong for stratovolcanoes; underestimates short-horizon risk by 2–4× after recent eruption.</li><li><strong>Renewal process with Weibull inter-arrival.</strong> Captures clustering via shape parameter k. Comparable to Hawkes on simple cases but cannot encode the diminishing-influence-with-time intuition. Hawkes is preferred.</li><li><strong>Bayesian network of monitoring signals.</strong> Sparks &amp; Aspinall (2004) framework. More principled when monitoring data is rich (Kīlauea), but parameter-heavy and not transferable across volcanoes.</li></ul>
-
-            <h3 id="m-valid">Empirical validation</h3>
-            <p>Held-out backtest against the most recent calibration window: 70% in-sample / 30% out-of-sample split with walk-forward re-fitting at quarterly cadence. The dashboard's primary forward statistic tracks observed ground-truth within the stated 95% credible band for ≥87% of test periods, consistent with the model's nominal coverage. Re-calibration cadence is documented under "Calibration".</p>
-
-            <h3 id="m-limits">Known limitations</h3>
-            <ul><li>Supervolcano eruptions (VEI 7+) are extremely rare and the Hawkes framework is statistically uninformative at that scale — Yellowstone projections should be read as illustrative only.</li><li>Submarine volcanoes (Axial Seamount) have poor seismic monitoring; the calibration window is short and the Hawkes parameters are poorly identified.</li><li>Tectonic context (subduction-zone vs rift vs hotspot) is not modeled as a covariate but materially shifts eruption style.</li><li>Co-eruptive observable couplings γ_* are linearized; in reality the relationship between SO₂ flux and eruption probability is highly nonlinear in the run-up week.</li><li>Inter-volcano coupling (e.g. via tectonic stress transfer) is not modeled; each volcano is treated as independent.</li></ul>
-
-            <h3 id="m-future">Open questions &amp; future work</h3>
-            <ul class="methodology-future">
-                  <li>Extend the model to admit non-stationary regime shifts via hidden-Markov augmentation.</li>
-                  <li>Cross-domain transfer learning from analogous calibrated entities to reduce cold-start uncertainty.</li>
-                  <li>Bayesian hierarchical pooling to share strength across the volcanoes cohort.</li>
-                  <li>Real-time recalibration from a streaming data source replacing the static snapshot.</li>
-                  <li>User-configurable parameter sliders bound to a live re-run of the Monte Carlo engine.</li>
-                </ul>
-
-            <h3 id="m-code">Code &amp; data</h3>
-            <p>The full source for the Monte Carlo engine, calibration notebook, and per-volcano parameter table is available at the project's <a href="https://github.com/pablowilliams/VolcanoActivityTerminal" rel="noopener">GitHub repository</a>. A reproducibility Jupyter notebook is planned for release alongside the next snapshot.</p>
-              <ul class="methodology-code">
-                <li><a href="https://github.com/pablowilliams/VolcanoActivityTerminal/blob/main/app.js" rel="noopener"><code>app.js</code></a> — engine, calibration, and rendering</li>
-                <li><a href="https://github.com/pablowilliams/VolcanoActivityTerminal/blob/main/data/quotes.json" rel="noopener"><code>data/quotes.json</code></a> — synthetic snapshot, refreshed every 6h by GitHub Action</li>
-                <li><a href="https://github.com/pablowilliams/VolcanoActivityTerminal/blob/main/.github/workflows/refresh-data.yml" rel="noopener"><code>.github/workflows/refresh-data.yml</code></a> — refresh cadence workflow</li>
-              </ul>
-
-            <h3 id="m-refs">References</h3>
-            <ol class="methodology-refs" aria-label="References"><li><cite>Sparks, R. S. J. &amp; Aspinall, W. P. (2004). Volcanic Activity: Frontiers and Challenges in Forecasting. AGU Geophysical Monograph.</cite></li><li><cite>Marzocchi, W. &amp; Bebbington, M. S. (2012). Probabilistic Eruption Forecasting at Short and Long Time Scales. Bulletin of Volcanology 74.</cite></li><li><cite>Newhall, C. G. &amp; Self, S. (1982). The Volcanic Explosivity Index (VEI). Journal of Geophysical Research 87(C2).</cite></li><li><cite>Hawkes, A. G. (1971). Spectra of some self-exciting and mutually exciting point processes. Biometrika 58(1), 83–90.</cite></li><li><cite>Ogata, Y. (1981). On Lewis' simulation method for point processes. IEEE Transactions on Information Theory IT-27.</cite></li><li><cite>Coppola, D. et al. (2016). MIROVA: a hot-spot detection system for active volcanoes. Bulletin of Volcanology 78.</cite></li><li><cite>Bebbington, M. S. (2010). Trends and clustering in the onsets of volcanic eruptions. Journal of Geophysical Research 115.</cite></li><li><cite>Tarasewicz, J. et al. (2014). Eruptive sequences at volcanoes — a Hawkes process analysis. Volcanica 1.</cite></li><li><cite>Smithsonian Institution Global Volcanism Program (current). Volcanoes of the World database.</cite></li><li><cite>USGS Hawaiian Volcano Observatory, INGV Catania, JMA Volcanology, PVMBG, CENAPRED, PHIVOLCS — current monitoring reports.</cite></li></ol>
+            <h3>Calculation</h3>
+            <p>Each location has a synthetic activity index, drift, and dispersion. The browser generates seeded lognormal paths and derives comparison summaries. The hazard panels are deterministic sensitivity views, not eruption forecasts.</p>
+            <h3>Reproducibility</h3>
+            <p>The observation snapshot is committed with the source. The same location, controls, and seed produce the same result.</p>
+            <h3>Limits</h3>
+            <ul><li>No observatory, satellite, seismic, gas, or civil-protection feed is connected.</li><li>The activity index has no operational alert-level meaning.</li><li>The model is not a Hawkes-process fit and has no demonstrated forecast skill.</li><li>Always use the responsible monitoring agency for current hazards.</li></ul>
+            <h3>Source</h3>
+            <p>Review the <a href="https://github.com/pablowilliams/eruption-watch/blob/main/app.js" rel="noopener">browser implementation</a> and <a href="https://github.com/pablowilliams/eruption-watch/blob/main/data/quotes.json" rel="noopener">versioned input snapshot</a>.</p>
           </article>
         </section>
 
@@ -489,8 +401,8 @@
   </svg>
 
   <footer class="app-footer" role="contentinfo">
-    <span>MC engine: Geometric Brownian Motion // VAT sentiment (simulated) // WCAG 2.2 AA</span>
-    <span class="brand-mark">VAT<span class="dot">.</span></span>
+    <span>Seeded activity scenarios · synthetic observations · not an alerting service</span>
+    <span class="brand-mark">EW<span class="dot">.</span></span>
   </footer>
 
 </div>

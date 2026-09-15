@@ -1,7 +1,7 @@
 "use strict";
 
 /* =========================================================================
-   SentimentTradingView — Monte Carlo dashboard
+   Domain-specific scenario analysis interface
    =========================================================================
    All data is mocked for the demo. Integration seams:
      - fetchPrices()        -> Polygon / Alpaca / Finnhub REST + WS
@@ -342,10 +342,10 @@ const STRATEGIES = [
     apply: (ctx) => {
       const s20 = sma(ctx.history, 20);
       const s50 = sma(ctx.history, 50);
-      if (s20 == null || s50 == null) return { signal: "WATCH", detail: "Not enough history for 50-day MA." };
-      if (s20 > s50 * 1.005) return { signal: "ERUPT",  detail: `20-day (${s20.toFixed(2)}) above 50-day (${s50.toFixed(2)}) — bullish trend.` };
-      if (s20 < s50 * 0.995) return { signal: "DORMANT", detail: `20-day (${s20.toFixed(2)}) below 50-day (${s50.toFixed(2)}) — bearish trend.` };
-      return { signal: "WATCH", detail: `20-day ≈ 50-day — consolidation.` };
+      if (s20 == null || s50 == null) return { signal: "STEADY", detail: "Not enough history for 50-day MA." };
+      if (s20 > s50 * 1.005) return { signal: "ELEVATED",  detail: `20-day (${s20.toFixed(2)}) above 50-day (${s50.toFixed(2)}) — bullish trend.` };
+      if (s20 < s50 * 0.995) return { signal: "LOWER", detail: `20-day (${s20.toFixed(2)}) below 50-day (${s50.toFixed(2)}) — bearish trend.` };
+      return { signal: "STEADY", detail: `20-day ≈ 50-day — consolidation.` };
     },
   },
   {
@@ -354,9 +354,9 @@ const STRATEGIES = [
     desc: "GPS deformation",
     apply: (ctx) => {
       const r = rsi(ctx.history, 14);
-      if (r < 30) return { signal: "ERUPT",  detail: `RSI ${r.toFixed(1)} — oversold, mean-revert up.` };
-      if (r > 70) return { signal: "DORMANT", detail: `RSI ${r.toFixed(1)} — overbought, mean-revert down.` };
-      return { signal: "WATCH", detail: `RSI ${r.toFixed(1)} — mid-range, no edge.` };
+      if (r < 30) return { signal: "ELEVATED",  detail: `RSI ${r.toFixed(1)} — oversold, mean-revert up.` };
+      if (r > 70) return { signal: "LOWER", detail: `RSI ${r.toFixed(1)} — overbought, mean-revert down.` };
+      return { signal: "STEADY", detail: `RSI ${r.toFixed(1)} — mid-range, no edge.` };
     },
   },
   {
@@ -365,11 +365,11 @@ const STRATEGIES = [
     desc: "20-day RSAM",
     apply: (ctx) => {
       const h = ctx.history;
-      if (h.length < 21) return { signal: "WATCH", detail: "Not enough data." };
+      if (h.length < 21) return { signal: "STEADY", detail: "Not enough data." };
       const r20 = (h[h.length - 1] - h[h.length - 21]) / h[h.length - 21];
-      if (r20 > 0.05)  return { signal: "ERUPT",  detail: `+${(r20 * 100).toFixed(1)}% past 20d — ride the trend.` };
-      if (r20 < -0.05) return { signal: "DORMANT", detail: `${(r20 * 100).toFixed(1)}% past 20d — negative momo.` };
-      return { signal: "WATCH", detail: `${(r20 * 100).toFixed(1)}% past 20d — flat.` };
+      if (r20 > 0.05)  return { signal: "ELEVATED",  detail: `+${(r20 * 100).toFixed(1)}% past 20d — ride the trend.` };
+      if (r20 < -0.05) return { signal: "LOWER", detail: `${(r20 * 100).toFixed(1)}% past 20d — negative momo.` };
+      return { signal: "STEADY", detail: `${(r20 * 100).toFixed(1)}% past 20d — flat.` };
     },
   },
   {
@@ -377,14 +377,14 @@ const STRATEGIES = [
     name: "VEI Skew",
     desc: "Plinian tail",
     apply: (ctx) => {
-      if (!ctx.mcSummary) return { signal: "WATCH", detail: "Run a simulation." };
+      if (!ctx.mcSummary) return { signal: "STEADY", detail: "Run a simulation." };
       const { ci95High, ci95Low, expectedReturn, probUp } = ctx.mcSummary;
       const upside = ci95High;
       const downside = -ci95Low;
       const ratio = upside / Math.max(downside, 0.0001);
-      if (ratio > 1.3 && expectedReturn > 0.01) return { signal: "ERUPT", detail: `Up/down ratio ${ratio.toFixed(2)}x, E[R] ${(expectedReturn * 100).toFixed(1)}%, Pr(up) ${(probUp * 100).toFixed(0)}%.` };
-      if (ratio < 0.8 && expectedReturn < -0.01) return { signal: "DORMANT", detail: `Up/down ratio ${ratio.toFixed(2)}x, E[R] ${(expectedReturn * 100).toFixed(1)}%, Pr(up) ${(probUp * 100).toFixed(0)}%.` };
-      return { signal: "WATCH", detail: `Up/down ratio ${ratio.toFixed(2)}x — no clear edge.` };
+      if (ratio > 1.3 && expectedReturn > 0.01) return { signal: "ELEVATED", detail: `Up/down ratio ${ratio.toFixed(2)}x, E[R] ${(expectedReturn * 100).toFixed(1)}%, Pr(up) ${(probUp * 100).toFixed(0)}%.` };
+      if (ratio < 0.8 && expectedReturn < -0.01) return { signal: "LOWER", detail: `Up/down ratio ${ratio.toFixed(2)}x, E[R] ${(expectedReturn * 100).toFixed(1)}%, Pr(up) ${(probUp * 100).toFixed(0)}%.` };
+      return { signal: "STEADY", detail: `Up/down ratio ${ratio.toFixed(2)}x — no clear edge.` };
     },
   },
   {
@@ -393,21 +393,21 @@ const STRATEGIES = [
     desc: "net field sentiment",
     apply: (ctx) => {
       const s = ctx.sentiment;
-      if (s.score > 0.25)  return { signal: "ERUPT",  detail: `Net +${(s.score * 100).toFixed(0)} — crowd bullish.` };
-      if (s.score < -0.15) return { signal: "DORMANT", detail: `Net ${(s.score * 100).toFixed(0)} — crowd bearish.` };
-      return { signal: "WATCH", detail: `Net ${(s.score * 100).toFixed(0)} — mixed crowd.` };
+      if (s.score > 0.25)  return { signal: "ELEVATED",  detail: `Net +${(s.score * 100).toFixed(0)} — crowd bullish.` };
+      if (s.score < -0.15) return { signal: "LOWER", detail: `Net ${(s.score * 100).toFixed(0)} — crowd bearish.` };
+      return { signal: "STEADY", detail: `Net ${(s.score * 100).toFixed(0)} — mixed crowd.` };
     },
   },
 ];
 
-function signalScore(signal) { return signal === "ERUPT" ? 1 : signal === "DORMANT" ? -1 : 0; }
+function signalScore(signal) { return signal === "ELEVATED" ? 1 : signal === "LOWER" ? -1 : 0; }
 
 function combineSignals(results) {
-  if (!results.length) return { signal: "WATCH", detail: "Select at least one strategy." };
+  if (!results.length) return { signal: "STEADY", detail: "Select at least one strategy." };
   const avg = results.reduce((a, r) => a + signalScore(r.signal), 0) / results.length;
-  if (avg > 0.35)  return { signal: "ERUPT",    detail: "Majority bullish." };
-  if (avg < -0.35) return { signal: "DORMANT",   detail: "Majority bearish." };
-  return { signal: "WATCH", detail: "Mixed strategy signals." };
+  if (avg > 0.35)  return { signal: "ELEVATED",    detail: "Majority bullish." };
+  if (avg < -0.35) return { signal: "LOWER",   detail: "Majority bearish." };
+  return { signal: "STEADY", detail: "Mixed strategy signals." };
 }
 
 // ========== State ==========
@@ -428,7 +428,7 @@ const state = {
 };
 
 // =======================================================================
-// ===== REAL-TIME DATA SOURCE (Yahoo Finance via CORS proxy) ============
+// ===== VERSIONED SCENARIO SNAPSHOT ============
 // =======================================================================
 
 const dataSource = {
@@ -580,17 +580,17 @@ function onConnModeChange(newMode, source) {
   if (newMode === "offline") {
     if (banner && !banner.dataset.dismissed) {
       banner.hidden = false;
-      setText("#feed-banner-text", "Live feed unavailable — showing simulated data.");
+      setText("#feed-banner-text", "Scenario snapshot unavailable — using embedded seed data.");
     }
     if (!dataSource.hasAnnouncedFallback && sess) {
-      sess.textContent = "Live data feed unavailable. Dashboard is using simulated prices.";
+      sess.textContent = "Versioned snapshot unavailable. Using embedded synthetic inputs.";
       dataSource.hasAnnouncedFallback = true;
     }
   } else if (newMode === "delayed") {
-    if (sess) sess.textContent = `Live feed delayed. Source: ${source || ""}.`;
+    if (sess) sess.textContent = `Snapshot check delayed. Source: ${source || ""}.`;
   } else if (newMode === "live") {
     if (banner && !banner.dataset.dismissed) banner.hidden = true;
-    if (sess) sess.textContent = `Live feed active. Source: ${source || "YF"}.`;
+    if (sess) sess.textContent = `Scenario snapshot loaded. Source: ${source || "YF"}.`;
   }
 }
 
@@ -613,7 +613,7 @@ function updateMarketStatus() {
 // ========== Enrichment ==========
 function buildStocksRuntime() {
   const stocks = STARRED.map((s) => {
-    // Prefer real Yahoo history + calibrated mu/sigma when available
+    // Prefer versioned snapshot history and calibrated parameters when available
     const realHist = dataSource.realHistories[s.ticker];
     const cal = dataSource.realCalibrations[s.ticker];
     let history, mu, sigma, price, prevClose;
@@ -753,8 +753,8 @@ function dollarFmt(x) {
 }
 
 function signalBadge(signal, opts = {}) {
-  const cls = signal === "ERUPT" ? "badge-buy" : signal === "DORMANT" ? "badge-sell" : "badge-unsure";
-  const icon = signal === "ERUPT" ? "▲" : signal === "DORMANT" ? "▼" : "◆";
+  const cls = signal === "ELEVATED" ? "badge-buy" : signal === "LOWER" ? "badge-sell" : "badge-unsure";
+  const icon = signal === "ELEVATED" ? "▲" : signal === "LOWER" ? "▼" : "◆";
   const label = `Signal: ${signal}`;
   return `<span class="badge ${cls}" aria-label="${label}${opts.context ? ". " + opts.context : ""}"><span class="icon" aria-hidden="true">${icon}</span>${signal}</span>`;
 }
@@ -769,11 +769,11 @@ let kpisBuilt = false;
 const kpiDefs = () => {
   const k = state.portfolio;
   return [
-    { id: "kpi-value",  label: "Portfolio value", value: k.value,           fmt: (v) => dollarFmt(v), mod: "accent",                              sub: `${state.stocks.length} volcanoes · equal weight` },
-    { id: "kpi-pnl",    label: "Today P&L",       value: k.pnl,             fmt: (v) => dollarFmt(v), mod: k.pnl >= 0 ? "positive" : "negative",  valueMod: k.pnl >= 0 ? "up" : "down", subHtml: deltaLabel(k.pnlPct) },
-    { id: "kpi-er",     label: "Expected return", value: k.expectedReturn,  fmt: (v) => pctFmt(v),    mod: k.expectedReturn >= 0 ? "positive" : "negative", valueMod: k.expectedReturn >= 0 ? "up" : "down", sub: `${state.horizon}-day · MC` },
-    { id: "kpi-var",    label: "95% VaR",         value: k.var95,           fmt: (v) => pctFmt(v),    mod: "negative", valueMod: "down",           sub: "5th percentile" },
-    { id: "kpi-sharpe", label: "Sharpe",          value: k.sharpe,          fmt: (v) => v.toFixed(2), mod: "accent",                              sub: "Ex-ante · rf 4.5%" },
+    { id: "kpi-value",  label: "Aggregate activity index", value: k.value,           fmt: (v) => dollarFmt(v), mod: "accent",                              sub: `${state.stocks.length} volcanoes · equal weight` },
+    { id: "kpi-pnl",    label: "Current activity change",       value: k.pnl,             fmt: (v) => dollarFmt(v), mod: k.pnl >= 0 ? "positive" : "negative",  valueMod: k.pnl >= 0 ? "up" : "down", subHtml: deltaLabel(k.pnlPct) },
+    { id: "kpi-er",     label: "Expected activity drift", value: k.expectedReturn,  fmt: (v) => pctFmt(v),    mod: k.expectedReturn >= 0 ? "positive" : "negative", valueMod: k.expectedReturn >= 0 ? "up" : "down", sub: `${state.horizon}-day · MC` },
+    { id: "kpi-var",    label: "95% lower activity",         value: k.var95,           fmt: (v) => pctFmt(v),    mod: "negative", valueMod: "down",           sub: "5th percentile" },
+    { id: "kpi-sharpe", label: "Stability ratio",          value: k.sharpe,          fmt: (v) => v.toFixed(2), mod: "accent",                              sub: "Normalised dispersion" },
     { id: "kpi-sent",   label: "Crowd score",     value: k.sentimentScore,  fmt: (v) => pctFmt(v, 0), mod: k.sentimentScore >= 0 ? "positive" : "negative", valueMod: k.sentimentScore >= 0 ? "up" : "down", sub: "X net · pos − neg" },
   ];
 };
@@ -806,8 +806,8 @@ function renderKPIs() {
   });
 
   // Right rail
-  const buys = state.stocks.filter((x) => getCombinedSignalForStock(x).signal === "ERUPT").length;
-  const sells = state.stocks.filter((x) => getCombinedSignalForStock(x).signal === "DORMANT").length;
+  const buys = state.stocks.filter((x) => getCombinedSignalForStock(x).signal === "ELEVATED").length;
+  const sells = state.stocks.filter((x) => getCombinedSignalForStock(x).signal === "LOWER").length;
   const avgProbUp = state.stocks.reduce((a, x) => a + x.mcSummary.probUp, 0) / state.stocks.length;
   const k = state.portfolio;
 
@@ -826,11 +826,11 @@ function renderKPIs() {
     animateNumber(el, prev, r.value, r.fmt, 520);
     state.prevKpi[r.sel] = r.value;
   });
-  setText("#rail-er-sub", `Portfolio · ${state.horizon}d`);
+  setText("#rail-er-sub", `Watch set · ${state.horizon}d`);
   setText("#rail-buys-val", `${buys} / ${sells}`);
   setText("#rail-buys-sub", `${state.stocks.length} volcanoes total`);
 
-  // Terminal strip
+   strip
   setText("#term-horizon", state.horizon + "D");
   setText("#term-paths", state.sims >= 1000 ? (state.sims / 1000) + "K" : String(state.sims));
   setText("#term-seed", String(state.seed));
@@ -896,7 +896,7 @@ function renderStocksTable() {
     const ciLabel = `${pctFmt(s.mcSummary.ci95Low, 1)} / ${pctFmt(s.mcSummary.ci95High, 1)}`;
     const sentDom = s.sentiment.positive > s.sentiment.negative ? "Pos" : s.sentiment.negative > s.sentiment.positive ? "Neg" : "Mix";
     const sentScore = pctFmt(s.sentiment.score, 0);
-    const dotCls = s.combinedSignal.signal === "ERUPT" ? "buy" : s.combinedSignal.signal === "DORMANT" ? "sell" : "unsure";
+    const dotCls = s.combinedSignal.signal === "ELEVATED" ? "buy" : s.combinedSignal.signal === "LOWER" ? "sell" : "unsure";
     const conviction = convictionFromStock(s);
     const convAnim = convictionChanges[s.ticker] ? " animate" : "";
     const spark = sparklineSvg(s.history, s.change >= 0);
@@ -1057,7 +1057,7 @@ function renderChart(mc, stock, onComplete) {
   for (let i = 0; i <= 4; i++) gridVals.push(yMin + (yMax - yMin) * (i / 4));
 
   const s = mc.summary;
-  const captionText = `${mc.nPaths.toLocaleString()} Monte Carlo paths over ${mc.days} trading days. Expected return ${pctFmt(s.expectedReturn)}, median ${pctFmt(s.medianReturn)}, 95% CI ${pctFmt(s.ci95Low)} to ${pctFmt(s.ci95High)}, probability of gain ${(s.probUp * 100).toFixed(0)}%.`;
+  const captionText = `${mc.nPaths.toLocaleString()} Monte Carlo paths over ${mc.days} forecast steps. Expected activity drift ${pctFmt(s.expectedReturn)}, median ${pctFmt(s.medianReturn)}, 95% CI ${pctFmt(s.ci95Low)} to ${pctFmt(s.ci95High)}, probability of gain ${(s.probUp * 100).toFixed(0)}%.`;
   const chartAriaLabel = `${stock.ticker} Monte Carlo chart. ${captionText}`;
 
   // Build frame SVG with placeholders that will be animated in
@@ -1096,7 +1096,7 @@ function renderChart(mc, stock, onComplete) {
     ["Start price", priceFmt(mc.S0)],
     ["Paths simulated", mc.nPaths.toLocaleString()],
     ["Horizon (days)", mc.days],
-    ["Expected return", pctFmt(s.expectedReturn)],
+    ["Expected activity drift", pctFmt(s.expectedReturn)],
     ["Median return", pctFmt(s.medianReturn)],
     ["5th percentile", pctFmt(s.ci95Low)],
     ["95th percentile", pctFmt(s.ci95High)],
@@ -1268,10 +1268,10 @@ function renderSummary() {
 
   // Aggregate signal for the whole watchlist
   const all = state.stocks.map((s) => getCombinedSignalForStock(s).signal);
-  const buy = all.filter((x) => x === "ERUPT").length;
-  const sell = all.filter((x) => x === "DORMANT").length;
-  const uns = all.filter((x) => x === "WATCH").length;
-  const winner = buy > sell && buy > uns ? "ERUPT" : sell > buy && sell > uns ? "DORMANT" : "WATCH";
+  const buy = all.filter((x) => x === "ELEVATED").length;
+  const sell = all.filter((x) => x === "LOWER").length;
+  const uns = all.filter((x) => x === "STEADY").length;
+  const winner = buy > sell && buy > uns ? "ELEVATED" : sell > buy && sell > uns ? "LOWER" : "STEADY";
   const agg = `${buy} ERUPT · ${uns} WATCH · ${sell} DORMANT across ${all.length} volcanoes.`;
   $("#aggregate-signal").innerHTML = signalBadge(winner, { context: agg });
   $("#summary-signal").innerHTML = signalBadge(winner, { context: agg });
@@ -1410,7 +1410,7 @@ function wireEvents() {
         const er = state.mcResult && state.mcResult.summary
           ? pctFmt(state.mcResult.summary.expectedReturn)
           : "—";
-        announce(`Simulation complete for ${state.selectedTicker}. Expected return ${er}.`);
+        announce(`Simulation complete for ${state.selectedTicker}. Expected activity drift ${er}.`);
       });
     }, 30);
   });
@@ -1434,7 +1434,7 @@ function wireEvents() {
     }
     state.portfolio = computePortfolioKpis(state.stocks);
     renderAll();
-    announce(`Horizon set to ${state.horizon} trading days.`);
+    announce(`Horizon set to ${state.horizon} forecast steps.`);
   });
 
   // Seed
@@ -1493,7 +1493,7 @@ function wireEvents() {
       renderAll();
       banner.hidden = true;
     } else {
-      setText("#feed-banner-text", "Live feed still unavailable. Continuing with simulation.");
+      setText("#feed-banner-text", "Snapshot still unavailable. Continuing with embedded inputs.");
     }
   });
 
@@ -1683,19 +1683,19 @@ function spawnParticles(origin, kind) {
   if (prefersReducedMotion()) return;
   const layer = $("#fx-layer");
   if (!layer) return;
-  const count = kind === "ERUPT" ? 18 : 14;
+  const count = kind === "ELEVATED" ? 18 : 14;
   for (let i = 0; i < count; i++) {
     const p = document.createElement("div");
-    p.className = "fx-particle" + (kind === "DORMANT" ? " sell" : "");
+    p.className = "fx-particle" + (kind === "LOWER" ? " sell" : "");
     p.style.left = origin.x + "px";
     p.style.top = origin.y + "px";
     layer.appendChild(p);
-    const angle = kind === "ERUPT"
+    const angle = kind === "ELEVATED"
       ? (Math.random() * Math.PI * 2)
       : (Math.PI / 2 + (Math.random() - 0.5) * 0.7);
-    const speed = kind === "ERUPT" ? 40 + Math.random() * 80 : 20 + Math.random() * 40;
+    const speed = kind === "ELEVATED" ? 40 + Math.random() * 80 : 20 + Math.random() * 40;
     const dx = Math.cos(angle) * speed;
-    const dy = Math.sin(angle) * speed + (kind === "DORMANT" ? 70 + Math.random() * 40 : 0);
+    const dy = Math.sin(angle) * speed + (kind === "LOWER" ? 70 + Math.random() * 40 : 0);
     const dur = 620 + Math.random() * 380;
     const rot = (Math.random() - 0.5) * 200;
     p.animate(
@@ -1708,7 +1708,7 @@ function spawnParticles(origin, kind) {
   }
 }
 function particlesForSignalFlip(row, signal) {
-  if (signal !== "ERUPT" && signal !== "DORMANT") return;
+  if (signal !== "ELEVATED" && signal !== "LOWER") return;
   const badge = row.querySelector(".badge");
   if (!badge) return;
   const r = badge.getBoundingClientRect();
@@ -1731,7 +1731,7 @@ function setGauge(arcEl, needleEl, ratio, statusLabelEl, value, fmt, thresholds)
 }
 function renderGauges() {
   const k = state.portfolio;
-  // Sharpe: map [-1, 3] -> [0, 1]
+  // Stability ratio: map [-1, 3] -> [0, 1]
   const sharpeRatio = Math.max(0, Math.min(1, (k.sharpe + 1) / 4));
   const sharpeStatus =
     k.sharpe >= 1.5 ? "excellent" :
@@ -1739,7 +1739,7 @@ function renderGauges() {
     k.sharpe >= 0.3 ? "moderate" :
     k.sharpe >= 0   ? "weak" : "negative";
   setGauge($("#gauge-sharpe-arc"), $("#gauge-sharpe-needle"), sharpeRatio);
-  $("#gauge-sharpe").setAttribute("aria-label", `Sharpe ${k.sharpe.toFixed(2)}, ${sharpeStatus} (target > 1.0)`);
+  $("#gauge-sharpe").setAttribute("aria-label", `Stability ratio ${k.sharpe.toFixed(2)}, ${sharpeStatus} (target > 1.0)`);
   setText("#rail-sharpe-sub", `Ex-ante · ${sharpeStatus}`);
 
   // VaR: more negative = worse. map [-0.30, 0] -> [1, 0] (more red = fuller arc)
@@ -1751,76 +1751,6 @@ function renderGauges() {
   setGauge($("#gauge-var-arc"), $("#gauge-var-needle"), varRatio);
   $("#gauge-var").setAttribute("aria-label", `Value at Risk 95 percent, ${pctFmt(k.var95)}, ${varStatus}`);
   setText("#rail-var-sub", `5th pct · ${varStatus}`);
-}
-
-// --- Boot sequence (feature 8) ---------------------------------------
-function runBootSequence(onComplete) {
-  const overlay = $("#boot-overlay");
-  if (!overlay) { onComplete(); return; }
-  const alreadySeen = sessionStorage.getItem("vat.booted") === "1";
-  if (alreadySeen || prefersReducedMotion()) {
-    overlay.hidden = true;
-    onComplete();
-    return;
-  }
-  overlay.hidden = false;
-  const log = $("#boot-log");
-  const skipBtn = $("#boot-skip");
-  let cancelled = false;
-  let timers = [];
-
-  const finish = () => {
-    if (cancelled) return;
-    cancelled = true;
-    timers.forEach(clearTimeout);
-    sessionStorage.setItem("vat.booted", "1");
-    overlay.classList.add("fadeout");
-    setTimeout(() => { overlay.hidden = true; onComplete(); }, 440);
-  };
-
-  skipBtn.addEventListener("click", finish, { once: true });
-  const escHandler = (e) => { if (e.key === "Escape") { finish(); document.removeEventListener("keydown", escHandler); } };
-  document.addEventListener("keydown", escHandler);
-  skipBtn.focus();
-
-  const lines = [
-    "> VAT-TERMINAL v4.7  (c) volcanoactivityterminal",
-    "> booting kernel ........................ <span class='ok'>OK</span>",
-    "> mounting volcano watchlist ......... <span class='ok'>OK</span>",
-    `> loading ${STARRED.length} volcanoes .................... <span class='ok'>OK</span>`,
-    "> initializing monte carlo engine (GBM) .. <span class='ok'>OK</span>",
-    "> hooking VAT sentiment stream ........ <span class='ok'>OK</span>",
-    "> warming strategy voters ................ <span class='ok'>OK</span>",
-    "> session ready. <span class='cursor'></span>",
-  ];
-  let out = "";
-  const typeLine = (i) => {
-    if (cancelled) return;
-    if (i >= lines.length) { timers.push(setTimeout(finish, 420)); return; }
-    const line = lines[i];
-    let j = 0;
-    const step = () => {
-      if (cancelled) return;
-      // fast type, respecting tag boundaries
-      const next = line.indexOf("<", j);
-      if (next === -1) {
-        out += line.slice(j);
-        j = line.length;
-      } else if (next > j) {
-        out += line[j];
-        j++;
-      } else {
-        const close = line.indexOf(">", j);
-        out += line.slice(j, close + 1);
-        j = close + 1;
-      }
-      log.innerHTML = out;
-      if (j < line.length) timers.push(setTimeout(step, 12));
-      else { out += "\n"; log.innerHTML = out; timers.push(setTimeout(() => typeLine(i + 1), 90)); }
-    };
-    step();
-  };
-  typeLine(0);
 }
 
 // --- Chart crosshair (feature 10) ------------------------------------
@@ -1975,7 +1905,7 @@ function renderExtraPanel() {
 function renderExtra2Panel() {
   const container = document.getElementById("extra2-content");
   if (!container || !state.stocks) return;
-  // Hawkes-process inter-eruption interval histogram
+  // Synthetic inter-eruption interval histogram
   const w = 720, h = 280, padL = 50, padR = 12, padT = 16, padB = 28;
   const inW = w - padL - padR, inH = h - padT - padB;
   const bins = [0, 5, 15, 30, 60, 120, 240, 480];
@@ -1993,7 +1923,7 @@ function renderExtra2Panel() {
       <text x="${x + barW / 2}" y="${h - 10}" text-anchor="middle" fill="#7f8693" font-size="9" font-family="JetBrains Mono, monospace">${bins[i]}–${bins[i+1]}yr</text>`;
     hawkesPath += (i === 0 ? "M" : "L") + (x + barW / 2).toFixed(1) + "," + (padT + inH - hh).toFixed(1) + " ";
   }
-  container.innerHTML = `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Eruption recurrence histogram for tracked volcanoes. Bars: observed inter-eruption intervals. Curve: Hawkes self-exciting kernel.">
+  container.innerHTML = `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Synthetic eruption recurrence histogram. Bars: illustrative inter-eruption intervals. Curve: clustering index.">
     ${bars}
     <path d="${hawkesPath}" fill="none" stroke="#ffbb66" stroke-width="2" stroke-dasharray="3 3"/>
     <text x="${padL + 14}" y="${padT + 12}" fill="#ffbb66" font-size="10" font-family="JetBrains Mono, monospace">HAWKES INTENSITY  λ(t) = μ + Σ α e^{−β(t−t_i)}</text>
@@ -2108,13 +2038,10 @@ async function init() {
   updateConnStripOnly();
   updateMarketStatus();
 
-  // Try real Yahoo Finance bootstrap in background; stocks are built either way
+  // Load the versioned synthetic scenario snapshot before rendering
   const bootstrapPromise = dataSource.bootstrap(STARRED.map((s) => s.ticker)).catch(() => ({ ok: false }));
 
-  // Kick off boot sequence in parallel so UI feels responsive
-  runBootSequence(() => {
-    announce("Dashboard ready.");
-  });
+  announce("Dashboard ready.");
 
   const result = await bootstrapPromise;
 
@@ -2136,7 +2063,7 @@ async function init() {
   renderExtra3Panel();
   renderExtra4Panel();
 
-  const src = result.ok ? `real Yahoo Finance data for ${result.count} tickers` : "simulated data (live feed unavailable)";
+  const src = result.ok ? `versioned synthetic snapshot for ${result.count} tickers` : "embedded seed data (snapshot unavailable)";
   announce(`Dashboard ready with ${src}.`);
 }
 

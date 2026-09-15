@@ -1,39 +1,24 @@
-# VolcanoActivityTerminal
+# Eruption Watch
 
-Terminal-style Monte Carlo dashboard for active volcanoes with VEI eruption probability sims, hazard heat-matrix, and volcanology-community chatter sentiment.
+A scenario monitor for exploring how simplified seismic, thermal and deformation indicators alter a volcanic-activity watchlist.
 
-## Features
+## What it demonstrates
 
-- **Monte Carlo simulation** — Geometric Brownian Motion engine, configurable paths (100 / 1k / 10k) and horizons (5 / 30 / 90 / 252 periods).
-- **Volcano watchlist** — 12 volcanoes (SAKU, KILA, ETNA, STROM, FUEGO…).
-- **Live tick simulation** — synthetic ticks every few seconds with deterministic seed for reproducibility.
-- **Strategy signals** — ERUPT / DORMANT / WATCH derived from Seismic MA Cross, Inflation MR, Tremor Momentum, VEI Skew, Volcanologist Notes.
-- **VAT chatter panel** — positive / neutral / negative sentiment with sample posts per volcano.
-- **Volcano KPIs** — aggregate value, P&L, expected return, 95% VaR, Sharpe, sentiment.
-- **Custom panel** — VEI × thermal-anomaly hazard heat-matrix with glyph + color severity.
-- **Accessible by default** — WCAG 2.2 AA: keyboard nav, ARIA live regions, screen-reader chart alternatives, 4.5:1 contrast in dark mode.
+- Fixed-seed scenario generation with explicit horizon and path controls.
+- A volcano comparison table with activity indicators and watch states.
+- VEI and thermal-anomaly sensitivity views.
+- Keyboard navigation, readable status text and chart alternatives.
 
-## Running
+All observations and forecasts are synthetic. This is not an operational warning product; official observatory and civil-protection guidance always takes precedence.
 
-No build step. Live at https://pablowilliams.github.io/VolcanoActivityTerminal/.
-
-For local development, any static server works:
+## Run locally
 
 ```bash
 python3 -m http.server 8000
-# then visit http://localhost:8000
 ```
 
-## Data pipeline
+Open `http://localhost:8000`. The published version is available through GitHub Pages.
 
-The dashboard reads `data/quotes.json` on load and on each tick. A scheduled GitHub Action (`.github/workflows/refresh-data.yml`) regenerates synthetic close histories every hour so the visible data evolves. Replace the generator with a real data source to go live.
+## Engineering note
 
-## Architecture
-
-- `index.html` — semantic layout, landmarks, headings
-- `app.js` — data, Monte Carlo engine, sentiment, signal logic, rendering
-- `styles.css` — dark terminal theme with AA-contrast tokens
-
-## License
-
-Private. All rights reserved.
+The scenario kernel is shared with four sibling studies. Eruption Watch supplies its own volcanic-activity adapter, safety language and domain-specific panels.
